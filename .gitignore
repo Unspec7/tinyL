@@ -127,3 +127,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+.idea/codeStyles/
+.idea/deployment.xml
+.idea/httpRequests/
+.idea/misc.xml
+.idea/modules.xml
+.idea/tinyL.iml
+.idea/vcs.xml
