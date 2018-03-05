@@ -158,7 +158,7 @@ static int expr()
 static void assign()
 {
 	char ident;
-        int reg;
+    int reg;
 
 	if (!is_identifier(token)) {
 		ERROR("Expected identifier\n");
@@ -169,19 +169,18 @@ static void assign()
 	if (token != '=') {
 		ERROR("Expected equal sign for assignment statement\n");
 		exit(EXIT_FAILURE);
-	};
+	}
 	next_token();
-        reg = expr();
+    reg = expr();
 	
 	CodeGen(STORE, ident, reg, EMPTY_FIELD);
 }
 
 static void read()
 {
-	if (token == '?'){
-        next_token();
-        CodeGen(READ, token, EMPTY_FIELD, EMPTY_FIELD);
-    }
+    next_token();
+    CodeGen(READ, token, EMPTY_FIELD, EMPTY_FIELD);
+    next_token();
 }
 
 static void print()  /* variables are handled explicitly without recursive call */
