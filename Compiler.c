@@ -96,9 +96,15 @@ static int digit()
 
 static int variable()  /* only called for R-values */
 {
-        int reg;
-		/* YOUR CODE GOES HERE */
-        return reg;
+    int reg;
+    if (!is_identifier(token)){
+        ERROR("Expected variable\n");
+        exit(EXIT_FAILURE);
+    }
+    reg = next_register();
+    CodeGen(LOAD, reg, token, EMPTY_FIELD);
+    next_token();
+    return reg;
 }
 
 static int expr()
@@ -106,28 +112,46 @@ static int expr()
 	int reg, left_reg, right_reg;
 
 	switch (token) {
-	case '+':
-		next_token();
-		left_reg = expr();
-		right_reg = expr();
-		reg = next_register();
-		CodeGen(ADD, reg, left_reg, right_reg);
-		return reg;
-		/* YOUR CODE GOES HERE */
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-		return digit();
-	default:
-		ERROR("Symbol %c unknown\n", token);
-		exit(EXIT_FAILURE);
+	    case '+':
+		    next_token();
+            left_reg = expr();
+            right_reg = expr();reg = next_register();
+            CodeGen(ADD, reg, left_reg, right_reg);
+            return reg;
+        case '-':
+            next_token();
+            left_reg = expr();
+            right_reg = expr();
+            reg = next_register();
+            CodeGen(SUB, reg, left_reg, right_reg);
+            return reg;
+        case '*':
+            next_token();
+            left_reg = expr();
+            right_reg = expr();
+            reg = next_register();
+            CodeGen(MUL, reg, left_reg, right_reg);
+            return reg;
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+            return variable();
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return digit();
+        default:
+            ERROR("Symbol %c unknown\n", token);
+            exit(EXIT_FAILURE);
 	}
 }
 
@@ -154,7 +178,10 @@ static void assign()
 
 static void read()
 {
-	/* YOUR CODE GOES HERE */
+	if (token == '?'){
+        next_token();
+        CodeGen(READ, token, EMPTY_FIELD, EMPTY_FIELD);
+    }
 }
 
 static void print()  /* variables are handled explicitly without recursive call */
@@ -174,26 +201,49 @@ static void print()  /* variables are handled explicitly without recursive call 
 
 static void stmt()
 {
-	/* YOUR CODE GOES HERE */
+    switch(token) {
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+            assign();
+            return;
+        case '?':
+            read();
+            return;
+        case '!':
+            print();
+            return;
+        default:
+            ERROR("Unknown symbol %c\n", token);
+            exit(EXIT_FAILURE);
+    }
 }
 
 static void morestmts()
 {
-	/* YOUR CODE GOES HERE */
+	if (token == ';'){
+        next_token();
+        stmtlist();
+    }
 }
 
 static void stmtlist()
 {
-	/* YOUR CODE GOES HERE */
+	stmt();
+    morestmts();
 }
 
 static void program()
 {
-        assign();     /* DUMMY - NEEDS TO BE DELETED */
-        next_token(); /* DUMMY - NEEDS TO BE DELETED */
-        print();      /* DUMMY - NEEDS TO BE DELETED */
+    /*
+    assign();
+    next_token();
+    print();
+    */
 
-	/* YOUR CODE GOES HERE */
+	stmtlist();
 
 	if (token != '.') {
 		ERROR("Program error.  Current input symbol is %c\n", token);
