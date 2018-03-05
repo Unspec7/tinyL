@@ -115,7 +115,8 @@ static int expr()
 	    case '+':
 		    next_token();
             left_reg = expr();
-            right_reg = expr();reg = next_register();
+            right_reg = expr();
+            reg = next_register();
             CodeGen(ADD, reg, left_reg, right_reg);
             return reg;
         case '-':

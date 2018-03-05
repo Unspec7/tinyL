@@ -35,11 +35,7 @@ int main()
                 //Subtracting
                 case SUB:
                     current->field1 = next->field1;
-                    if (next->field1 > next->field3){
-                        current->field2 = current->field2 - previous->field2;
-                    } else {
-                        current->field2 = current->field2 - previous->field2;
-                    }
+                    current->field2 = current->field2 - previous->field2;
                 //Multiplying
                 case MUL:
                     current->field1 = next->field1;
