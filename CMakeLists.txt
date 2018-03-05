@@ -3,4 +3,4 @@ project(tinyL C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_custom_target(Makefile)
+add_executable(tinyL Compiler.c)
