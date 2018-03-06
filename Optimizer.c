@@ -20,42 +20,67 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-    Instruction *current, *previous, *next;
-    current = head;
-    previous = head->prev;
-    next = head->next;
-    //Do this while current and next exist. AKA not NULL
-    while(current && next){
-        if (previous && previous->opcode == LOADI && current && current->opcode == LOADI){
-            switch(next->opcode){
-                //Adding
-                case ADD:
-                    current->field1 = next->field1;
-                    current->field2 = next->field2;
-                //Subtracting
-                case SUB:
-                    current->field1 = next->field1;
-                    current->field2 = current->field2 - previous->field2;
-                //Multiplying
-                case MUL:
-                    current->field1 = next->field1;
-                    current->field2 = current->field2 * previous->field2;
+    Instruction *current;
+    Instruction *previous;
+    Instruction *next;
 
-                    current->next = next->next;
-                    current->next->prev = current;
-                    current->prev = previous->prev;
-                    current->prev->next = current;
-                    //FREEDOM
-                    free(previous);
-                    free(next);
-                default:
-                    break;
+    current = head;
+    previous = current->next;
+    next = previous->next;
+
+    int first, second, result, check;
+    check = 0;
+
+    while (next != NULL) {
+        //Check the opcodes
+        if ( current->opcode == LOADI && previous->opcode == LOADI &&
+                (next->opcode == ADD ||  next->opcode == SUB || next->opcode == MUL) ){
+            check = 1;
+
+            first = current->field2;
+            second = previous->field2;
+
+            current->field1 = next->field1;
+
+            if (next->opcode == ADD) {
+                result = first+second;
+                current->field2 = result;
+            }
+            else if (next->opcode == SUB) {
+                result = first-second;
+                current->field2 = result;
+            }
+            else if (next->opcode == MUL) {
+                result = first*second;
+                current->field2 = result;
+            } else {
+                ERROR("Unexpected instruction\n");
+                exit(EXIT_FAILURE);
             }
         }
-        //Move on with the list
-        current = current->next;
-        previous = current->prev;
-        next = current->next;
+
+        //Check if there can be optimizations
+        if (check == 0) {
+            current = current->next;
+            previous = previous->next;
+            next = next->next;
+        } else {
+            Instruction *temp1;
+            Instruction *temp2;
+
+            temp1 = previous;
+            temp2 = next;
+
+            free(temp1);
+            free(temp2);
+
+            current->next = next->next;
+            current = current->next;
+            previous = current->next;
+            next = previous->next;
+
+            check = 0;
+        }
     }
 
 	if (head) {//Wait this doesn't actually do anything?? Head is always true
